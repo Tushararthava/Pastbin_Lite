@@ -10,7 +10,7 @@ const router = Router();
 const pasteController = new PasteController();
 
 router.get('/', (_req, res) => {
-    res.sendFile('home.html', { root: path.join(__dirname, '../../public') });
+    res.sendFile('index.html', { root: path.join(__dirname, '../../public') });
 });
 
 router.get('/login', (_req, res) => {

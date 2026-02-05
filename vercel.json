@@ -20,6 +20,14 @@
             "dest": "backend/api/index.ts"
         },
         {
+            "src": "/login",
+            "dest": "backend/public/login.html"
+        },
+        {
+            "src": "/register",
+            "dest": "backend/public/register.html"
+        },
+        {
             "src": "/(.*)",
             "dest": "backend/public/$1"
         }
