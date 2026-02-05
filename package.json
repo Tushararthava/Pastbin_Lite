@@ -1,0 +1,9 @@
+{
+    "name": "pastbin-lite",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "install": "cd backend && npm install",
+        "build": "cd backend && npm run build"
+    }
+}
