@@ -1,21 +1,10 @@
 {
     "version": 2,
-    "builds": [
-        {
-            "src": "backend/package.json",
-            "use": "@vercel/node",
-            "config": {
-                "includeFiles": [
-                    "backend/dist/**",
-                    "backend/public/**"
-                ]
-            }
-        }
-    ],
+    "buildCommand": "cd backend && npm install && npm run build",
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "backend/dist/api/index.js"
+            "dest": "/api/index.js"
         }
     ],
     "env": {
