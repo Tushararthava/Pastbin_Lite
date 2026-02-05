@@ -6,6 +6,7 @@ import { disconnectDatabase } from './config/database.js';
 const server = app.listen(config.port, () => {
     logger.info(`Server running on port ${config.port} in ${config.nodeEnv} mode`);
     logger.info(`Base URL: ${config.baseUrl}`);
+    console.log('SERVER_STARTED_SUCCESSFULLY');
 });
 
 const shutdown = async (signal: string) => {

@@ -21,7 +21,7 @@ const getEnvVar = (key: string, defaultValue?: string): string => {
 export const config: Config = {
     port: parseInt(getEnvVar('PORT', '3000'), 10),
     nodeEnv: getEnvVar('NODE_ENV', 'development'),
-    databaseUrl: getEnvVar('DATABASE_URL'),
+    databaseUrl: process.env.DATABASE_URL || '',
     baseUrl: getEnvVar('BASE_URL', 'http://localhost:3000'),
     testMode: getEnvVar('TEST_MODE', '0') === '1',
 };

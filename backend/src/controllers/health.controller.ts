@@ -8,7 +8,8 @@ export class HealthController {
             const dbHealthy = await checkDatabaseConnection();
 
             if (dbHealthy) {
-                successResponse(res, 'OK', { ok: true });
+                // Assignment Spec requires: { "ok": true }
+                res.status(200).json({ ok: true });
             } else {
                 errorResponse(res, 'Database connection failed', 503);
             }

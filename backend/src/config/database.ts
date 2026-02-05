@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import { logger } from '../utils/logger.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { migrateDatabase } from './migration.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,14 +14,26 @@ db.pragma('journal_mode = WAL');
 
 const createTables = () => {
     const createTableSQL = `
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE TABLE IF NOT EXISTS pastes (
       id TEXT PRIMARY KEY,
+      title TEXT,
       content TEXT NOT NULL,
+      language TEXT DEFAULT 'plaintext',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       expires_at DATETIME,
       max_views INTEGER,
-      current_views INTEGER DEFAULT 0
-    )
+      current_views INTEGER DEFAULT 0,
+      view_count INTEGER DEFAULT 0,
+      user_id TEXT,
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    );
   `;
 
     const createIndexes = `
@@ -32,6 +45,9 @@ const createTables = () => {
         db.exec(createTableSQL);
         db.exec(createIndexes);
         logger.info('Database tables created successfully');
+
+        // Run migration to add new columns to existing tables
+        migrateDatabase();
     } catch (error) {
         logger.error('Error creating tables:', error);
         throw error;

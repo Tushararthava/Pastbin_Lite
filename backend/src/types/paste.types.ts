@@ -1,7 +1,10 @@
 export interface CreatePasteDto {
+    title?: string;
     content: string;
+    language?: string;
     ttl_seconds?: number;
     max_views?: number;
+    expiration?: string;
 }
 
 export interface PasteResponse {
@@ -17,9 +20,12 @@ export interface PasteDetailResponse {
 
 export interface PasteData {
     id: string;
+    title: string | null;
     content: string;
-    createdAt: Date;
-    expiresAt: Date | null;
-    maxViews: number | null;
-    currentViews: number;
+    language: string;
+    created_at: Date;
+    expires_at: Date | null;
+    max_views: number | null;
+    current_views: number;
+    view_count: number;
 }
