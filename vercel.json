@@ -2,14 +2,20 @@
     "version": 2,
     "builds": [
         {
-            "src": "backend/api/index.ts",
-            "use": "@vercel/node"
+            "src": "backend/package.json",
+            "use": "@vercel/node",
+            "config": {
+                "includeFiles": [
+                    "dist/**",
+                    "public/**"
+                ]
+            }
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "backend/api/index.ts"
+            "dest": "backend/dist/api/index.js"
         }
     ],
     "env": {
