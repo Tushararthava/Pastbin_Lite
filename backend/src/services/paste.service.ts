@@ -1,7 +1,7 @@
 import { db } from '../config/database.js';
 import type { CreatePasteDto, PasteResponse, PasteDetailResponse, PasteData } from '../types/paste.types.js';
 import { AppError } from '../types/common.types.js';
-import { calculateExpiryDate, isExpired } from '../utils/time.util.js';
+import { calculateExpiryDate } from '../utils/time.util.js';
 import { config } from '../config/environment.js';
 import { logger } from '../utils/logger.js';
 import { randomBytes } from 'crypto';

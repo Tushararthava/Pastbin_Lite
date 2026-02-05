@@ -27,7 +27,7 @@ export class AuthController {
         }
     };
 
-    me = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    me = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
         // @ts-ignore - user is attached by auth middleware
         const user = req.user;
         successResponse(res, 'User info retrieved', { user });

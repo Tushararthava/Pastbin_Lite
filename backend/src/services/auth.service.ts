@@ -3,7 +3,7 @@ import type { User, CreateUserDto, LoginDto, AuthResponse } from '../types/auth.
 import { AppError } from '../types/common.types.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { config } from '../config/environment.js';
+
 import { randomUUID } from 'crypto';
 import { logger } from '../utils/logger.js';
 
@@ -52,7 +52,7 @@ export class AuthService {
         }
 
         // Check password
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, String(user.password));
         if (!isMatch) {
             throw new AppError('Invalid credentials', 401);
         }
