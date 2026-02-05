@@ -35,13 +35,12 @@ export class PasteService {
             }
         }
 
-        const stmt = db.prepare(`
-      INSERT INTO pastes (id, title, content, language, expires_at, max_views, current_views, view_count, user_id)
-      VALUES (?, ?, ?, ?, ?, ?, 0, 0, ?)
-    `);
-
         try {
-            stmt.run(id, title ?? null, content, language ?? 'plaintext', expiresAt, max_views ?? null, userId ?? null);
+            await db.run(`
+                INSERT INTO pastes (id, title, content, language, expires_at, max_views, current_views, view_count, user_id)
+                VALUES (?, ?, ?, ?, ?, ?, 0, 0, ?)
+            `, [id, title ?? null, content, language ?? 'plaintext', expiresAt, max_views ?? null, userId ?? null]);
+
             logger.info(`Paste created: ${id} (User: ${userId || 'Anonymous'})`);
 
             const url = `${config.baseUrl}/p/${id}`;
@@ -58,21 +57,23 @@ export class PasteService {
 
     async getPasteById(id: string, currentTime: Date): Promise<PasteData> {
         // Atomic update and fetch:
-        // Increment view_count only if:
-        // 1. Paste exists
-        // 2. View limit not reached (max_views IS NULL OR view_count < max_views)
-        // 3. Not expired (expires_at IS NULL OR expires_at > now)
-        const stmt = db.prepare(`
+        // Use RETURNING to get updated state.
+        // Both SQLite (modern) and Postgres support RETURNING.
+        const sql = `
             UPDATE pastes
             SET view_count = view_count + 1
             WHERE id = ?
               AND (max_views IS NULL OR view_count < max_views)
               AND (expires_at IS NULL OR expires_at > ?)
             RETURNING id, title, content, language, created_at, expires_at, max_views, current_views, view_count
-        `);
+        `;
 
         try {
-            const row = stmt.get(id, currentTime.toISOString()) as any;
+            // For updates with returning, strict logic varies.
+            // Postgres: UPDATE ... RETURNING -> use query/get
+            // SQLite: UPDATE ... RETURNING -> use get/all
+            // Adapter 'get' calls pool.query or stmt.get which handles returning rows.
+            const row = await db.get<any>(sql, [id, currentTime.toISOString()]);
 
             if (!row) {
                 // If update returned nothing, it's either missing, expired, or limit reached.
@@ -120,15 +121,15 @@ export class PasteService {
         };
     }
     async getUserPastes(userId: string): Promise<PasteData[]> {
-        const stmt = db.prepare(`
+        const sql = `
             SELECT id, title, content, language, created_at, expires_at, max_views, current_views, view_count
             FROM pastes
             WHERE user_id = ?
             ORDER BY created_at DESC
-        `);
+        `;
 
         try {
-            const rows = stmt.all(userId) as any[];
+            const rows = await db.query<any>(sql, [userId]);
 
             return rows.map(row => ({
                 id: row.id,

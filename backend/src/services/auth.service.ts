@@ -14,7 +14,7 @@ export class AuthService {
         const { username, password } = data;
 
         // Check if user exists
-        const existingUser = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
+        const existingUser = await db.get<{ id: string }>('SELECT id FROM users WHERE username = ?', [username]);
         if (existingUser) {
             throw new AppError('Username already exists', 409);
         }
@@ -24,10 +24,11 @@ export class AuthService {
         const id = randomUUID();
 
         // Create user
-        const stmt = db.prepare('INSERT INTO users (id, username, password) VALUES (?, ?, ?)');
-
         try {
-            stmt.run(id, username, hashedPassword);
+            await db.run(
+                'INSERT INTO users (id, username, password) VALUES (?, ?, ?)',
+                [id, username, hashedPassword]
+            );
 
             const token = this.generateToken(id, username);
 
@@ -45,7 +46,7 @@ export class AuthService {
         const { username, password } = data;
 
         // Find user
-        const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as User;
+        const user = await db.get<User>('SELECT * FROM users WHERE username = ?', [username]);
 
         if (!user) {
             throw new AppError('Invalid credentials', 401);
