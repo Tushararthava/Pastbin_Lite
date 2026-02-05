@@ -2,18 +2,22 @@
     "version": 2,
     "builds": [
         {
-            "src": "api/index.ts",
+            "src": "backend/api/index.ts",
             "use": "@vercel/node"
+        },
+        {
+            "src": "backend/public/**",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
         {
             "src": "/api/(.*)",
-            "dest": "/api/index.ts"
+            "dest": "/backend/api/index.ts"
         },
         {
             "src": "/p/(.*)",
-            "dest": "/api/index.ts"
+            "dest": "/backend/api/index.ts"
         },
         {
             "src": "/(.*)",
