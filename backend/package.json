@@ -6,7 +6,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc && node scripts/copy-assets.js",
+    "build": "tsc && node scripts/copy-assets.cjs",
     "vercel-build": "npm run build",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
