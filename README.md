@@ -1,6 +1,10 @@
 # Pastebin-Lite
 
 A production-grade Pastebin application built with clean architecture principles using Node.js, Express, TypeScript, and SQLite.
+
+## Live Demo 🚀
+**[https://pastbin-lite-one.vercel.app/](https://pastbin-lite-one.vercel.app/)**
+
 ## Features
 
 - **Create Pastes**: Create text pastes with optional expiry time and view limits
