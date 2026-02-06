@@ -1,6 +1,16 @@
 {
     "version": 2,
+    "builds": [
+        {
+            "src": "package.json",
+            "use": "@vercel/node"
+        }
+    ],
     "routes": [
+        {
+            "src": "/styles.css",
+            "dest": "/public/styles.css"
+        },
         {
             "src": "/(.*)",
             "dest": "/dist/api/index.js"
