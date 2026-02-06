@@ -69,8 +69,12 @@ class PostgresAdapter {
 }
 let dbInstance;
 export const initDatabase = async () => {
-    const databaseUrl = process.env.DATABASE_URL;
+    let databaseUrl = process.env.DATABASE_URL;
     const isVercel = process.env.VERCEL === '1';
+    if (isVercel && databaseUrl && (databaseUrl.includes('localhost') || databaseUrl.includes('127.0.0.1'))) {
+        logger.warn('Ignored localhost DATABASE_URL in production env.');
+        databaseUrl = undefined;
+    }
     if (databaseUrl) {
         logger.info('Initializing PostgreSQL connection...');
         const { Pool } = await import('pg');
