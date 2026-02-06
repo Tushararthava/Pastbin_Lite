@@ -6,7 +6,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc && node -e \"const fs=require('fs');const p=require('path');fs.mkdirSync('dist/views',{recursive:true});fs.readdirSync('src/views').filter(f=>f.endsWith('.html')).forEach(f=>fs.copyFileSync(p.join('src/views',f),p.join('dist/views',f)));fs.cpSync('public','dist/public',{recursive:true});\"",
+    "build": "tsc && node scripts/copy-assets.js",
     "vercel-build": "npm run build",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
