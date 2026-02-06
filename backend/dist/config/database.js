@@ -87,8 +87,6 @@ export const initDatabase = async () => {
         dbInstance = new PostgresAdapter(pool);
     }
     else {
-    }
-    {
         const isProduction = process.env.NODE_ENV === 'production';
         if (isProduction) {
             logger.warn('DATABASE_URL is not set in production. Database features will be unavailable.');
@@ -102,9 +100,8 @@ export const initDatabase = async () => {
         sqlite.pragma('journal_mode = WAL');
         dbInstance = new SQLiteAdapter(sqlite);
     }
+    await createTables();
 };
-await createTables();
-;
 const createTables = async () => {
     const isPostgres = !!process.env.DATABASE_URL;
     await dbInstance.exec(`
