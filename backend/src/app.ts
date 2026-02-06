@@ -21,10 +21,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files - use process.cwd() for Vercel compatibility
-const publicPath = process.env.VERCEL
-    ? path.join(process.cwd(), 'backend/public')
-    : path.join(__dirname, '../public');
+// Serve static files - use dist/public in production (compiled), public in dev
+const publicPath = path.join(__dirname, '../public');
 app.use(express.static(publicPath));
 
 app.use(routes);
