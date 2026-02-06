@@ -136,12 +136,23 @@ export const initDatabase = async (): Promise<void> => {
   } else {
     // Initialize SQLite
     logger.info('Initializing SQLite connection...');
-    const { default: Database } = await import('better-sqlite3');
+    let sqlite;
+    let dbPath;
 
-    const dbPath = path.join(__dirname, '../../data/pastebin.db');
-    logger.info(`Database path: ${dbPath}`);
+    if (!isProduction) {
+      // @ts-ignore
+      const Database = require('better-sqlite3');
+      dbPath = path.join(__dirname, '../../../prisma/dev.db');
+      logger.info(`Database path: ${dbPath}`);
+      sqlite = new Database(dbPath);
+    } else {
+      // For production, use the original path or handle differently if needed
+      const { default: Database } = await import('better-sqlite3');
+      dbPath = path.join(__dirname, '../../data/pastebin.db');
+      logger.info(`Database path: ${dbPath}`);
+      sqlite = new Database(dbPath);
+    }
 
-    const sqlite = new Database(dbPath);
     sqlite.pragma('journal_mode = WAL');
 
     dbInstance = new SQLiteAdapter(sqlite);
