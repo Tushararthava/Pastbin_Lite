@@ -274,11 +274,18 @@
 
                 const data = await response.json();
 
-                if (response.ok && data.success) {
-                    showToast('Paste created successfully!', 'success');
-                    setTimeout(() => {
-                        window.location.href = `/p/${data.data.id}`;
-                    }, 500);
+                if (response.ok) {
+                    // Logic to handle both standard successResponse and direct assignment-spec response
+                    const pasteId = data.data?.id || data.id;
+
+                    if (pasteId) {
+                        showToast('Paste created successfully!', 'success');
+                        setTimeout(() => {
+                            window.location.href = `/p/${pasteId}`;
+                        }, 500);
+                    } else {
+                        throw new Error(data.message || 'Failed to create paste (No ID returned)');
+                    }
                 } else {
                     throw new Error(data.message || 'Failed to create paste');
                 }
