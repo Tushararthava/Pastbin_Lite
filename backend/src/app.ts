@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 
 const app: Application = express();
 
-app.use(helmet({
+app.use((helmet as any)({
     contentSecurityPolicy: false,
 }));
 
