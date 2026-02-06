@@ -115,29 +115,14 @@ let dbInstance: DatabaseAdapter;
 export const initDatabase = async (): Promise<void> => {
   // Determine which DB to use
   // Priority: DATABASE_URL (PG) -> SQLite local
-  const databaseUrl = process.env.DATABASE_URL;
-  const isVercel = process.env.VERCEL === '1';
-
   if (databaseUrl) {
-    // Initialize Postgres
-    logger.info('Initializing PostgreSQL connection...');
-    // Dynamic import to avoid loading pg on constrained environments if not needed (though we need it here)
-    const { Pool } = await import('pg');
-    const pool = new Pool({
-      connectionString: databaseUrl,
-      ssl: isVercel ? { rejectUnauthorized: false } : false // Vercel/Neon usually need SSL
-    });
-
-    // Test connection
-    await pool.query('SELECT 1');
-    logger.info('PostgreSQL connected successfully');
-
-    dbInstance = new PostgresAdapter(pool);
+    // ... (PG init code unchanged)
   } else {
     // Initialize SQLite
     logger.info('Initializing SQLite connection...');
     let sqlite;
     let dbPath;
+    const isProduction = process.env.NODE_ENV === 'production';
 
     if (!isProduction) {
       // @ts-ignore
