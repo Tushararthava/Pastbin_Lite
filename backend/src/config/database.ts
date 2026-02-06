@@ -115,8 +115,14 @@ let dbInstance: DatabaseAdapter;
 export const initDatabase = async (): Promise<void> => {
   // Determine which DB to use
   // Priority: DATABASE_URL (PG) -> SQLite local
-  const databaseUrl = process.env.DATABASE_URL;
+  let databaseUrl = process.env.DATABASE_URL;
   const isVercel = process.env.VERCEL === '1';
+
+  // Protect against localhost connections in production
+  if (isVercel && databaseUrl && (databaseUrl.includes('localhost') || databaseUrl.includes('127.0.0.1'))) {
+    logger.warn('Ignored localhost DATABASE_URL in production env.');
+    databaseUrl = undefined;
+  }
 
   if (databaseUrl) {
     // Initialize Postgres
@@ -135,30 +141,26 @@ export const initDatabase = async (): Promise<void> => {
     dbInstance = new PostgresAdapter(pool);
   } else {
     // Initialize SQLite
-    logger.info('Initializing SQLite connection...');
-    let sqlite;
-    let dbPath;
     const isProduction = process.env.NODE_ENV === 'production';
 
-    if (!isProduction) {
-      // @ts-ignore
-      const Database = require('better-sqlite3');
-      dbPath = path.join(__dirname, '../../../prisma/dev.db');
-      logger.info(`Database path: ${dbPath}`);
-      sqlite = new Database(dbPath);
-    } else {
-      // For production, use the original path or handle differently if needed
-      // @ts-ignore
-      const Database = require('better-sqlite3');
-      dbPath = path.join(__dirname, '../../data/pastebin.db');
-      logger.info(`Database path: ${dbPath}`);
-      sqlite = new Database(dbPath);
+    if (isProduction) {
+      logger.warn('DATABASE_URL is not set in production. Database features will be unavailable.');
+      // Do not initialize SQLite in production to prevent crashes.
+      // Attempts to use DB will throw "Database accessed before initialization!" from Proxy.
+      return;
     }
 
+    // Initialize SQLite for Development
+    logger.info('Initializing SQLite connection...');
+    // @ts-ignore
+    const Database = require('better-sqlite3');
+    const dbPath = path.join(__dirname, '../../../prisma/dev.db');
+    logger.info(`Database path: ${dbPath}`);
+    const sqlite = new Database(dbPath);
     sqlite.pragma('journal_mode = WAL');
-
     dbInstance = new SQLiteAdapter(sqlite);
   }
+
 
   // Initialize Schema
   await createTables();
