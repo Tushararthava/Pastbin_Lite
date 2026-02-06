@@ -83,27 +83,24 @@ export const initDatabase = async () => {
         dbInstance = new PostgresAdapter(pool);
     }
     else {
-        logger.info('Initializing SQLite connection...');
-        let sqlite;
-        let dbPath;
+    }
+    {
         const isProduction = process.env.NODE_ENV === 'production';
-        if (!isProduction) {
-            const Database = require('better-sqlite3');
-            dbPath = path.join(__dirname, '../../../prisma/dev.db');
-            logger.info(`Database path: ${dbPath}`);
-            sqlite = new Database(dbPath);
+        if (isProduction) {
+            logger.warn('DATABASE_URL is not set in production. Database features will be unavailable.');
+            return;
         }
-        else {
-            const Database = require('better-sqlite3');
-            dbPath = path.join(__dirname, '../../data/pastebin.db');
-            logger.info(`Database path: ${dbPath}`);
-            sqlite = new Database(dbPath);
-        }
+        logger.info('Initializing SQLite connection...');
+        const Database = require('better-sqlite3');
+        const dbPath = path.join(__dirname, '../../../prisma/dev.db');
+        logger.info(`Database path: ${dbPath}`);
+        const sqlite = new Database(dbPath);
         sqlite.pragma('journal_mode = WAL');
         dbInstance = new SQLiteAdapter(sqlite);
     }
-    await createTables();
 };
+await createTables();
+;
 const createTables = async () => {
     const isPostgres = !!process.env.DATABASE_URL;
     await dbInstance.exec(`
