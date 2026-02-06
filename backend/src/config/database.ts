@@ -148,7 +148,8 @@ export const initDatabase = async (): Promise<void> => {
       sqlite = new Database(dbPath);
     } else {
       // For production, use the original path or handle differently if needed
-      const { default: Database } = await import('better-sqlite3');
+      // @ts-ignore
+      const Database = require('better-sqlite3');
       dbPath = path.join(__dirname, '../../data/pastebin.db');
       logger.info(`Database path: ${dbPath}`);
       sqlite = new Database(dbPath);
