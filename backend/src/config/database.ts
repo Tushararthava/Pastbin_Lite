@@ -115,6 +115,9 @@ let dbInstance: DatabaseAdapter;
 export const initDatabase = async (): Promise<void> => {
   // Determine which DB to use
   // Priority: DATABASE_URL (PG) -> SQLite local
+  const databaseUrl = process.env.DATABASE_URL;
+  const isVercel = process.env.VERCEL === '1';
+
   if (databaseUrl) {
     // ... (PG init code unchanged)
   } else {
