@@ -1,9 +1,9 @@
-// Import the compiled Express app
+// Vercel serverless function entry point
 module.exports = async function handler(req, res) {
     try {
         // Dynamically import the ES module
-        const { default: app } = await import('../backend/dist/app.js');
-        const { initDatabase } = await import('../backend/dist/config/database.js');
+        const { default: app } = await import('./backend/dist/app.js');
+        const { initDatabase } = await import('./backend/dist/config/database.js');
         const http = await import('http');
 
         // Initialize database once
