@@ -6,7 +6,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc && node -e \"const fs = require('fs'); const path = require('path'); const files = fs.readdirSync('src/views').filter(f => f.endsWith('.html') || f.endsWith('.css')); files.forEach(f => fs.copyFileSync(path.join('src/views', f), path.join('dist/views', f)));\"",
+    "build": "tsc && node -e \"const fs = require('fs'); const path = require('path'); fs.mkdirSync('dist/views', {recursive: true}); const files = fs.readdirSync('src/views').filter(f => f.endsWith('.html') || f.endsWith('.css')); files.forEach(f => fs.copyFileSync(path.join('src/views', f), path.join('dist/views', f)));\"",
     "vercel-build": "npm run build",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
